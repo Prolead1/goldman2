@@ -10,6 +10,7 @@ dependencies = [
     "numpy>=2.1",
     "openpyxl>=3.1",
     "pandas>=2.2",
+    "qbstyles>=0.1.4",
     "scipy>=1.14",
     "statsmodels>=0.14",
 ]

@@ -64,6 +64,13 @@ industries = load_industries()            # industries["value_monthly"], 49 colu
 etf = load_etf_daily()                    # daily NVDA/NVDL decimal returns
 ```
 
+## Notebooks
+
+- `notebooks/part1-factor-investing.ipynb` — complete Part 1 report with executed code,
+  written analysis and seven custom exhibits: factor-premium decay, MSCI momentum pipeline,
+  factor diversification, construction-sensitivity correlations, and momentum/volatility
+  regimes. Exhibits are also exported to `exports/part1/`.
+
 ## Assignment map
 
 1. **Part 1 — Factor investing (22 pts)**: factor premia and decay, MSCI factor index
