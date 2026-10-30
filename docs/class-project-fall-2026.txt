@@ -1,0 +1,385 @@
+===== PAGE 1 =====
+NUS, FE5108 (Portfolio Theory and Investments): practitioner segment class project 
+Fall, 2026; Sanne de Boer (rmiv125@nus.edu.sg) 
+• Teams of 3 to 6 students. Write-up due in-full over email a week after the last class, by Sunday Nov 
+8. PDF or Word, where supporting model/code can be sent as separate attachments or as an 
+appendix to the main write-up.  On the cover page, succinctly state the contributions of each team 
+member (coding, data analysis, write-up, etc.). 
+• Concise write-up, in your own words paraphrasing descriptions you have been asked to find. No 
+more than 8 pages of text, not counting exhibits (tables, charts). 
+• In the header or footnote for any exhibit you include, please state clearly (but again concisely) what 
+is being shown, including data source, time period, investable universe, etc. Similarly, make sure to 
+label any chart axes.  
+• Bonus credit awarded when the exhibits are easy to interpret and support your stated conclusions, 
+so please give some thought about how to best display your numerical results for each question. In 
+your career, you will find that an effective exhibit is much more powerful and compelling than long 
+descriptions, a habit worth forming now. 
+The objective of this assignment is to illustrate the notions around factor investing, portfolio 
+construction, and portfolio analytics that we have discussed in class, as well as provide hands-on 
+experience with the types of projects you may encounter in your future careers. 
+A new part of the project will be made available after each class, tracking the course outline to the 
+extent possible. 
+For your convenience, the data sets you are asked to download have already been provided on the class 
+website, but I recommend you take a look at the original source to familiarize yourself with it. Also, pay 
+close attention to the form and units that the data is provided in, for example total returns in percent 
+versus price indices, standardized factor exposures versus raw factor exposures, the specific time period 
+that a return is for, etc. 
+ 
+Part 1: factor investing (22/100) 
+The first part of this project aims to provide insight into different factor construction methodologies 
+used in academic finance research and by practitioners of factor investing. It will highlight how design 
+choices have meaningful impact, yet the return profiles of the underlying factors remain recognizable. 
+In 1992, University of Chicago professors Eugene Fama and Kenneth French wrote a highly influential 
+paper positing that three factors, rather than just a single market-beta factor (CAPM) helped explain the 
+cross-section of expected stock returns. These included the market factor (“Mkt – RF”, the equity 
+market’s return in excess of the risk-free rate), a size factor (“SMB”, “small minus big”, the return of 
+small-cap stocks over large-capitalization stocks), and a value factor (“HML”, “high minus low”, the 
+return of stocks with a high book-to-price ratio relative to those with a low book-to-price ratio). All 
+newly proposed factors in the subsequent academic literature were evaluated against these to gauge if 
+the historical premium went beyond what this model already predicted. This included all factor premia 
+that had been identified before the Fama-French 3-factor model but not gained academic acceptance 
+===== PAGE 2 =====
+due to the strong belief in CAPM. Only in the past decade, after the global financial crisis, have 
+alternative factor models started to gain traction, and professors Fama and French updated their model 
+with two more factors (high profitability and conservative investment). However, the original 3-factor 
+model is still widely referenced and remains important to understand. 
+1A) Factor premiums and factor decay 
+Download the history of monthly “Fama-French 3-factor model” returns from the “U.S. Research 
+Returns Data” tab on: 
+http://mba.tuck.dartmouth.edu/pages/faculty/ken.french/Data_Library/f-f_factors.html 
+Read the description of how these factor returns are calculated. We shall later return to how the “value 
+factor” (high to low book to market, abbreviated as HML1) return is calculated.   
+• Calculate the t-stat of the average return to the market, value, and small-size factors both for the 
+time period from 1927 through 1992, as well as for January 1993 through July of 2023 (post-
+publication of the original paper). Since these are return spreads, not actual portfolio returns, think 
+of what type of mean is appropriate (geometric? arithmetic?). For purposes of this question, you can 
+ignore any autocorrelation in factor returns in the calculation of the t-stat (that is, no need for 
+Newey West adjustment). 
+• Comment on the difference in statistical significance of the estimated factor premia you are seeing. 
+Do they all remain high-conviction investment ideas as they may have seemed at the time of the 
+publication of this research? 
+From the same website, also download the univariate monthly returns of (US) portfolios sorted by price 
+momentum and beta. These will be provided on both a value-weighted and an equal-weighted factor 
+portfolio construction. Calculate the time-series of monthly spreads between the top decile of lowest-
+beta and highest momentum portfolio versus the worst decile by those metrics on a value-weighted 
+basis for use later in this assignment.  
+1B) Factor index construction in practice 
+While Fama-French factor spreads have dominated academic discourse, practitioners have created their 
+own versions of “factor indexes,” paper portfolios that tilt to certain factors that can be tracked by 
+investors. A big index provider whose indexes are the basis for many exchange-traded factor funds is 
+MSCI, which makes index returns available on: https://www.msci.com/end-of-day-data-search 
+From the MSCI website, download historical (monthly, total, gross) returns for: 
+• MSCI USA index (standard, meaning for large-cap and mid-cap stocks) 
+• MSCI USA value index (standard, this is a legacy “style” index) 
+• MSCI USA minimum volatility index (standard, this is a “factor-high exposure” suite index; select 
+USD version, meaning optimized for USD returns) 
+• MSCI USA equal-weighted index (standard, this is a “factor-high exposure” suite index) 
+ 
+1 While Fama-French refer to this value factor as ‘book to market’, practitioners more commonly use ‘book to 
+price’ to refer to the same ratio. 
+===== PAGE 3 =====
+• MSCI USA momentum index (standard, this is a “factor-high exposure” suite index) 
+Note: the website will provide monthly index levels which you will have to transform to monthly returns 
+by taking their month-end to month-end percent change. Download the return data since January 1995.  
+Look up the methodology of the momentum index and answer the following questions in the context of 
+what we discussed in class about factor portfolio construction methods: 
+https://www.msci.com/eqb/methodology/meth_docs/MSCI_Momentum_Indices_Methodology.pdf 
+Please paraphrase in your own words and do not copy exhibits or text literally from the factsheet 
+- What is the investable universe of the index? 
+- On what basis is price momentum measured? 
+- How is price momentum standardized across stocks to create the momentum index? How are 
+outliers dealt with? 
+- How are “high momentum” stocks selected for inclusion in the factor index? 
+- How are the selected stocks weighted? Comment on whether this just looks at price 
+momentum, or whether the weighting methodology also includes market cap? If so, give two 
+reasons why this would be beneficial and one reason why this may be detrimental. 
+- Comment on the target rebalance frequency of the index. 
+- Comment on when the index may see trigger-based ad-hoc reconstitutions and why this may 
+benefit investors, as per the rationale provided in the factsheet? 
+- Comment on any cap (i.e., upper limit) that may or may not be applied to individual security 
+weights? 
+1C) Benefits of factor diversification 
+Create a multi-factor index return for each month by taking the average return over the value, 
+minimum-volatility, equal-weighted, and momentum indexes. For each of the 6 indexes you now have 
+(the overall MSCI USA market index, the four smart-beta indexes, and the multi-factor index) as well as 
+for a risk-free investment (using the Fama-French monthly “RF” returns for 1-month US treasury bills) 
+calculate the annualized average return from January 1995 through July 2023. Also calculate the Sharpe 
+Ratio for each2. Create exhibits that compare the average return level and risk-adjusted return (Sharpe 
+Ratio) for each of these and comment on which factor indexes did best, did worst, and the relative 
+performance of the multi-factor index.  
+1D) Sensitivity of factor returns to factor portfolio construction  
+Note that the above comparison is based on factor index returns, not yet factor spreads as provided by 
+Fama-French. For each month (January 1995-July 2023) calculate the spread of the 4 individual smart-
+beta strategies over the broad USA equity market index. Calculate the correlation of each of those four 
+factor spreads to each of the four Fama-French monthly return spreads (HML, SMB, high versus low 
+momentum, low versus high beta, all on a capitalization-weighted basis). Present the results in a (4 by 4) 
+table. Comment on the similarity between the Fama-French factor return spreads and those you 
+calculated based on the MSCI smart-beta indexes. 
+ 
+2 The Sharpe Ratio is defined as the annualized return to the strategy minus the annualized return of the risk -free 
+investment, divided by the annualized volatility of strategy returns.  
+===== PAGE 4 =====
+1E) Regime-sensitivity of factor premia 
+Using the provided Fama-French ‘excess market returns’ timeseries (Mkt-RF), calculate the timeseries of 
+trailing 12-month market return volatility starting in Dec 1995 (this is the earliest month you have the 
+full 12 month of data history). Using this market volatility indicator as well as the timeseries of Fama-
+French value-weighted momentum returns you calculated in 1A from Dec 1995 through July of 2023, 
+provide a statistical analysis of any type you see fit showing whether and how the profitability of 
+momentum investing has historically been dependent on the level of recent market volatility.  
+ 
+Part 2: Hands-on analysis of security-level data (20/100) 
+The second part of this project aims to provide experience working with security-level data. Guillaume 
+Coqueret and Tony Guida have generously made their excellent book “Machine Learning for Factor 
+Investing” referenced later in class available on the website: 
+http://www.mlfactor.com/   
+They have kindly provided actual stock-level historical data with this, an extract of which is available on 
+the class website. Note that the stocks have been ‘anonymized’ and all but the return data are provided 
+in standardized form. The reason is that this type of market data is generally expensive and sourced 
+from vendors like Refinitiv, Factset, Bloomberg, and S&P. It therefore cannot be simply made available 
+online in untransformed form even for educational purposes. The data dictionary for the full data set is 
+available at: http://www.mlfactor.com/data-description.html 
+Note that the provided returns field is in decimal points (0.01 is 1%) and ‘1 month forward,’ meaning the 
+value for 12/31/1998 is the return for January of 1999. This is a standard convenience for back-testing of 
+systematic investment strategies: you can create investment portfolios using data known as of 
+12/31/1998 (the investable universe, market valuations, factor values, etc.) and calculate the 
+subsequent return thereof without suffering from look-ahead bias, provided the data are truly point in 
+time. 
+2A) Data cleaning and validation  
+As discussed in class, it’s good practice to take a look at any new data set to understand its scope, 
+identify any potential issues including necessary data cleaning steps, and do sanity checks that give 
+confidence the data is what its vendor claims it to be. This is before even analyzing the data for being 
+useful in your investment process and testing whatever investment hypothesis you have in mind. 
+• Plot the number of stocks included in the data for each month of the provided history. Does the 
+investable universe appear to be consistently defined every month? What months are particularly 
+questionable? 
+• Visualize the distribution of the provided returns field. Are there outliers on the upside or the 
+downside? Clean the return data in each period in the provided history by winsorizing at the 99% 
+level.   
+• Plot the coverage (% not missing) of the return data field each period. Are there stocks with missing 
+return data in any period? If there are, how would you treat these stocks in your analysis and why? 
+===== PAGE 5 =====
+• Visualize the distribution of the provided standardized price to book field. Are there any values that 
+stand out? Given your insights previously given on how Fama-French define their HML value factor, 
+what do you believe this indicates about the data and how would you treat these stocks below, 
+when construction your own value portfolios? 
+• The data include only standardized (percentiled: 100 is highest) fields for price-to-book ratio (P/B), 
+book value of equity, and market capitalization, not their actual values. Given this limitation, show 
+how you might do a sanity check that the P/B value is indeed the ratio between market cap and 
+book value? 
+2B) Rules-based portfolio construction: broad market  
+Limit the data history to December 1998 through November 2018, so that any performance analysis 
+below covers 1999-2018 in full. In this and the following questions, we focus on long-only (no negative 
+weight) and fully invested (no leverage or cash holding: sum of weights equals 1) portfolios. 
+• In each period, approximate the capitalization-weighted market index by weighting stocks in 
+proportion to their standardized market cap and calculate the monthly return history.  
+• Compare the resultant monthly returns to those of the MSCI USA market index used in Part 1, taking 
+care to properly align periods. Show how you might gain confidence that the stock-level data you 
+have been provided cover a broad universe of US stocks and the return data are accurate. 
+2C) Factor portfolio construction     
+We will now compare different factor portfolio methodologies for their relative merits. In each period, 
+create the following long-only portfolios investing in the Book to Price (!!) value factor and calculate 
+their month return series. For each portfolio, most weight is allocated to those stocks that are the 
+cheapest on book to price.  
+1. Equally weight the top 20% of stocks by their book-to-price ratio 
+2. Weight stocks in proportion to the provided standardized (percentiled) exposure to the book-to-
+price ratio. 
+3. Weight stocks in proportion to the provided standardized (percentiled) exposure to the book-to-
+price ratio TIMES their provided standardized market cap. 
+ 
+Please answer the following questions: 
+ 
+• Report the average annualized return to each of these three value indexes here and compare to that 
+of your estimated return on the cap-weighted broad market. Which is highest and why do you 
+believe this is the case? 
+• Also report their annualized standard deviation and compare to the cap-weighted broad market. Be 
+mindful of what type of ‘average’ is appropriate here! Which is highest and why do you believe this 
+is the case? 
+• Looking at the portfolio weights for the last period in your analysis window, note which of the three 
+has the least stocks held in the portfolio and which has the highest single-stock weight. Comment, 
+based on the discussion in class, on whether this is as expected. 
+===== PAGE 6 =====
+2D) For each month, calculate the excess return (return differential) of each of your three value 
+strategies versus your estimated return on the cap-weighted broad universe.   
+• Calculate the annualized standard deviation of each of the three excess return time-series: this is 
+their annualized tracking error to the cap-weighted broad market. Which is lowest, and why do you 
+believe this is the case? 
+• Calculate the return correlation of each of your value strategies excess returns over the broad cap-
+weighted market to each other and to the Fama-French monthly value premia (HML return) you 
+considered in Part 1. Comment on the magnitude of the correlations you are seeing: are they all 
+conceivably investing in the same style factor? Comment on which of your three value strategies is 
+most similar to the HML factor. Given your previous answers on how the HML factor is constructed, 
+is this as expected? 
+ 
+Part 3: portfolio construction (21/100) 
+The third part of this project aims to provide hands-on experience with portfolio optimization and the 
+impact of design choices. From the Fama-French website, download the history of monthly industry 
+returns (use 49 industries, total returns [meaning including dividend payouts which are assumed 
+reinvested], value-weighted [meaning, each constituent weighted by its market capitalization]) back to 
+January 1995. Note how -99.99% return reflects missing data (in this case, no stock available at the time 
+in that industry yet): double-check that this does not affect the analysis period! Also note that Fama-
+French keep updating their data so make sure to cut out any periods outside the stated periods in the 
+assignments. 
+3A) portfolio optimization 
+Using the first 10 years (January 1995 – December 2004) as a “seed period” to estimate the covariance 
+matrix, set up an optimization to calculate the minimum-variance portfolio as of the close of 
+12/31/20043. The portfolio needs to be fully invested but may include short positions (meaning, 
+negative weights). Do the same for the minimum-variance portfolio but now subject to long-only 
+constraints (that is, no negative weights allowed). Lastly, calculate the “inverse-volatility” portfolio 
+which weights each industry in proportion to the inverse of its historical volatility (1/sigma, with sigma 
+the return volatility). The latter is a simple heuristic to give less risky assets a higher weight in the 
+portfolio.  
+Show the mathematical formulation of the long-only minimum-variance problem and explain how you 
+solved it (using any tool of your choice; include your code as an appendix to the write-up, not counting it 
+for the stated page limit). Show a table with the optimal industry weights for each of the above 3 
+portfolio construction methods, as well as the total sum of industry weights as a sanity check. For each 
+strategy, highlight the top 5 weights in green and the bottom 5 weights in red to allow easy comparison. 
+ 
+3 Empirical research has shown that the performance benefits of low -volatility investing can be accomplished 
+equally well through investing in defensive industries as through individual stock selection (see De Boer, 
+Campagna, and Norman, “Country and Sector Drive Low-Volatility Investing in Global Equity Markets,” Journal of 
+Index Investing, Spring 2014) 
+ 
+===== PAGE 7 =====
+3B) in-sample effectiveness 
+For each of the 3 low-volatility portfolios created earlier, show the in-sample annualized return volatility 
+for the period January 1995 through December 2004. Comment on which one resulted in the lowest 
+realized volatility and on the portfolio with the highest realized volatility. In particular, is the order “as 
+expected” and why might this have been the case, in the context of our review of optimization in class? 
+3C) out-of-sample effectiveness 
+For each of the 3 low-volatility portfolios created earlier, show the out-of-sample annualized return 
+volatility for the period January 2005 through July 2023. Comment on which one resulted in the lowest 
+realized volatility and on the portfolio with the highest realized volatility. In particular, is the order “as 
+expected” and why might this have been the case, in the context of our review of optimization in class? 
+3D) the value of re-optimization 
+Now create an updated long-only minimum-variance portfolio as of Dec 31, 2015, using again 10 years 
+of historical returns for the covariance matrix estimation (Jan 2006 – Dec 2015). Compare the realized 
+volatility of this portfolio for Jan 2016 through July 2023 to that of the long-only minimum-variance 
+portfolio you created as-of Dec 31, 2004. Comment on the difference and why this may or may not be as 
+expected? 
+3E) performance expectations 
+Focusing again on the long-only minimum-variance industry portfolio you created as-of Dec 31, 2004, 
+plot the cumulative value of $1 invested in this strategy at its inception date (12/31/2004) through July 
+31, 2023 using monthly returns (so the final data point for July 2023 is the value of that initial 
+investment at that date). Plot the value on a log-2 scale of the y-axis. In the same chart, add the 
+cumulative value of $1 invested in the MSCI US index. Comment on the performance of the minimum 
+variance strategy relative to the overall equity market (MSCI US index) during both the Global Financial 
+Crisis market downturn (Sept 2008 through Febr 2009) as well as during the COVID market meltdown 
+(February and March 2020). In particular, did the defensive strategy perform as-expected during these 
+periods? 
+Digging deeper, identify the 10 industries that held up best (that is, had the highest cumulative return) 
+during each of these two market crises (separately) and comment on whether these are traditional 
+defensive industries or whether some at first sight are unexpected (hint: what types of stocks actually 
+benefitted from the COVID crisis and are those historically low-volatility stocks?) 
+ 
+Part 4) product innovation (11/100) 
+Quantitative investment analysts will often get involved in new product development, helping ‘engineer’ 
+the desired investment outcome and evaluate if the final version delivers on it. While ETFs (Exchange 
+Traded Funds) have long been a convenient way to invest in diversified portfolios of individual securities, 
+the past few years have seen the launch of single-stock leveraged ETFs. In investing, ‘leverage’ typically 
+refers to investors borrowing money to be able to invest more money in some investment opportunity 
+they find attractive. If the investment works out, this will multiply their profits. If the investment loses 
+===== PAGE 8 =====
+money, the losses will be multiplied since the loans will still have to be paid back in full. Leverage is 
+therefore a dangerously double-edged sword and brokers to individual investors are cautious in making 
+it available to them. Single-stock leveraged ETFs aim to offer their investors some multiple of the daily 
+return of the underlying stock. The ETF company will take on the necessary leverage to do so, so the 
+investor in the ETF avoids the inconvenience in having to do so themselves.  
+In this part of the assignment we focus on GraniteShares 2x Long NVDA Daily ETF (US ticker NVDL), 
+which on any given US trading day aims to deliver twice the return of NVDIA (ticker NVDA). (Prior to 
+January 22 of 2024, it was only 1.5 times the return.) 
+https://graniteshares.com/institutional/us/en-us/etfs/nvdl/ 
+A file with daily total returns for both NVDL and NVDA from February through August of 2024 is 
+provided, as is the ETF’s factsheet.  
+4A) For both NVDA and NVDL, calculate and report the Standard Deviation, 95% Value at Risk, and 95% 
+Conditional Value at Risk. (no need to annualize) Comment on whether these risk metrics corroborate 
+that leverage increases the risk of an investment. 
+4B) Run a regression (with an intercept) of the daily returns of NVDL on the daily returns of NDVA. 
+Report the estimated coefficients and their confidence intervals. How does this analysis show or fail to 
+show if NVDL delivers on its stated objective in the factsheet of “The Fund seeks daily investment results, 
+before fees and expenses, of 2 times (200%) the daily percentage change of the common stock of NVIDIA 
+Corp. “ 
+4C) The estimated intercept of the regression analysis is a crude estimate of by how much the ETF return 
+lags the NVDA-related return component on a daily basis (that is, performance drag). Annualizing it by 
+multiplying by 252 trading days in a year, does this roughly align with the stated net operating expense 
+ratio (after a temporary discount offered by the ETF provider) of 1.15% per annum? Keeping in mind 
+that the ETF borrows money and trades NVDA stock on a daily basis (see below), name two other types 
+of expenses that may be reflected in the estimated annual performance drag. 
+4D) For each calendar month in the analysis period (February, …, August) as well as for the entire 
+analysis window (February through August), calculate and compare the total return for both NVDL and 
+NVDA. Comment on how this supports or fails to support the warning on the fund factsheet that ‘the 
+Fund should not be expected to provide 2 times the cumulative return of NVDA for periods greater than 
+one day.’ 
+4E) Assume that NVDA is up 10% on one day, and down 9% the next trading day. Over these two trading 
+days, what is the two-day return on NVDA, and what is the two day return on NVDL (ignoring any of the 
+daily drag)? Comment on how this supports or fails to support the warning on the fund factsheet that 
+‘The Fund will lose money if the underlying stock’s performance is flat over time, and (…) it is even 
+possible the Fund will lose money (…) while the underlying stock's performance increases over a period 
+longer than a single day.’  
+4F) If you’re a trader who is bullish on NVDA on a day it will present its new chips to the public, would 
+you prefer to buy the stock or the ETF? Same question if you’re a long-term investor who believes NVDA 
+will do well over the coming year but may see some price volatility.  
+===== PAGE 9 =====
+ 
+The above results may seem puzzling but have to do with the leverage of the ETF being dynamic. After a day on which NVDA rallies, the ETF will 
+have to borrow money and buy more shares of NVDA to maintain the two-times exposure for each new investor that buys the ETF. Conversely, 
+when the NVDA share price drops, the ETF will have to sell part of its NVDA shares to bring its exposure back in line. In a volatile market, this 
+‘buy high, sell low’ mechanic needed to maintain the ‘2x long’ exposure on every new trading day will be very costly for the ETF.  
+ 
+Part 5) portfolio analytics (26/100)  
+In the last part of this project we focus on how asset owners and their “Manager Research & Selection” 
+team can use factor attribution to understand the performance drivers of an investment strategy and 
+whether the portfolio manager delivers “alpha” (risk-adjusted excess return) over generic factor 
+strategies that are available for very low fees.  
+5A) Factor composite definitions 
+Looking up the methodology for the MSCI style indexes (link below), comment on how MSCI defines 
+“value” for purposes of selecting stocks from the overall core universe. Which value indicator(s) are 
+included and which growth metrics are used to define “growth” stocks (the opposite of value). Also 
+comment on whether the same metrics are used for all stocks or whether there are exceptions, and on 
+what basis? (for this question, a high-level description of the indicators suffices, no need for 
+implementation details) Contrast this to how Fama-French (FF) define their “value” (HML) metric, which 
+you reviewed in Part 1 of this project. 
+https://www.msci.com/eqb/methodology/meth_docs/MSCI_GIMIVGMethod_Feb2021.pdf 
+5B) Identifying strategy factor exposures based on return patterns 
+Run a pooled panel regression of the monthly total gross returns of MSCI’s value index (Jan 1995 - July 
+2023) on the same-month returns of the risk-free asset (RF, sourced from FF), the FF market factor, FF 
+value return (HML), and the FF return to the small size factor (SMB). Include an intercept in this 
+regression, since the risk-free rate hasn’t been constant over time. Report the regression coefficients 
+and their t-stat. For purposes of this exercise, there is no need to adjust the t-stats for the impact of any 
+auto-correlation in the residuals (i.e., no need for Newey-West adjustment). 
+Comment on whether the MSCI US Standard (Large+Mid Cap) Value equity index is “as-advertised” 
+based on this analysis, meaning has the stated exposures. 
+5C) Enhancing factor performance 
+The intercept in this regression equates the monthly average return of the MSCI Value Index over its 
+“replication” using generic Fama-French factors. Comment on whether the more elaborate definition of 
+“value” by MSCI seems to have improved performance over its original academic version used by Fama-
+French. 
+5D) Fund replication 
+The estimated coefficients in this regression (except the intercept) can be interpreted as the weights of 
+a “replicating portfolio” that invests in the Fama-French generic factor portfolios rather than in the MSCI 
+Value index. Calculate the time-series of monthly returns to this “replicating” portfolio and its return 
+===== PAGE 10 =====
+correlation to the original MSCI Value Index: was the replication arguably effective? Then calculate and 
+compare the annualized return, annualized volatility, and Sharpe Ratios of both the MSCI Value Index 
+and this replicating portfolio.  Which of these was historically the best investment option?  
+Keeping in mind that these are returns gross of any type of cost, provide at least one (up to 3) examples 
+of what else you might have to evaluate before choosing between these two. 
+5E) Relative performance analysis 
+Consider the time-series of monthly returns of the multi-factor index you calculated in Part I of this 
+assignment using the average return over the value, minimum-volatility, equal-weighted, and 
+momentum indexes for each month. For the multi-factor index and each of its 4 components, calculate 
+the monthly “active” return (return difference) to the MSCI USA standard index, which we’ll use as their 
+benchmark. 
+Calculate the annualized excess return of the multi-factor index compared to its benchmark over our 
+analysis period. Also calculate the annualized tracking error of your multi-factor index to its benchmark. 
+Use this to then calculate the annualized information ratio and comment on its magnitude given the 
+context provided in class: is the excess return of the multi-factor index over its benchmark high relative 
+to its tracking error? (recall that in Part I of this assignment, you compared their total returns, rather 
+than benchmark-relative) 
+5F) Risk decomposition 
+Mathematically, the variance of the monthly active multi-factor index returns will equal the average of 
+the co-variances between the multi-factor index return and each of its four components (feel free to 
+check this!). Using this variance decomposition, create an exhibit (pie or bar-chart) that highlights which 
+of the four individual component factors is the largest driver of the tracking error of the multi-factor 
+index. Thinking back about our discussion on “limits to arbitrage” in class, is this particular factor better 
+as a stand-alone or a benchmark-relative investment? 
+ 
