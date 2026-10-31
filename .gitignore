@@ -16,5 +16,10 @@ dist/
 
 # OS / editor
 .DS_Store
+~$*
 .idea/
 .vscode/
+
+# Generated Part 3 artifacts
+part3/outputs/*
+!part3/outputs/.gitkeep
