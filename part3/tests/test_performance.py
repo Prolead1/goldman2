@@ -74,7 +74,7 @@ class PerformanceTests(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as temp_dir:
             outputs = export_phase3e(self.results, temp_dir)
-            self.assertEqual(len(outputs), 7)
+            self.assertEqual(len(outputs), 8)
             self.assertTrue(all(path.is_file() for path in outputs.values()))
 
 
