@@ -70,6 +70,10 @@ etf = load_etf_daily()                    # daily NVDA/NVDL decimal returns
   written analysis and seven custom exhibits: factor-premium decay, MSCI momentum pipeline,
   factor diversification, construction-sensitivity correlations, and momentum/volatility
   regimes. Exhibits are also exported to `exports/part1/`.
+- `notebooks/part2-security-level-analysis.ipynb` — complete Part 2 report with executed code,
+  written analysis and nine custom exhibits: data validation (universe, returns, coverage, the
+  `Pb` = 0.50 spike, P/B sanity check), market-proxy validation against MSCI USA, three value
+  portfolios, tracking error and similarity to HML. Exhibits are also exported to `exports/part2/`.
 
 ## Assignment map
 
