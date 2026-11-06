@@ -9,6 +9,9 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from matplotlib.backends.backend_agg import FigureCanvasAgg
+from matplotlib.dates import DateFormatter, YearLocator
+from matplotlib.figure import Figure
 
 from .data import (
     CRISIS_WINDOWS,
@@ -256,6 +259,81 @@ def build_reporting_payload(results: Phase3EResults) -> dict[str, object]:
     }
 
 
+def export_cumulative_performance_chart(
+    wealth: pd.DataFrame,
+    output_path: str | Path,
+) -> Path:
+    """Export the report-ready Part 3E cumulative-performance chart."""
+    required_columns = [LONG_ONLY_LABEL, BENCHMARK_LABEL]
+    if wealth.empty or list(wealth.columns) != required_columns:
+        raise PerformanceAnalysisError(
+            "Cumulative wealth must contain the strategy and MSCI USA columns."
+        )
+    if wealth.isna().any().any() or (wealth <= 0.0).any().any():
+        raise PerformanceAnalysisError("Cumulative wealth must be positive and complete.")
+
+    destination = Path(output_path)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+
+    figure = Figure(figsize=(10.5, 5.8), dpi=160)
+    FigureCanvasAgg(figure)
+    axis = figure.add_subplot(1, 1, 1)
+
+    colors = {LONG_ONLY_LABEL: "#1F4E78", BENCHMARK_LABEL: "#A5A5A5"}
+    for column in required_columns:
+        axis.plot(
+            wealth.index,
+            wealth[column],
+            label=column,
+            color=colors[column],
+            linewidth=2.2,
+        )
+
+    crisis_labels = {"gfc": "GFC", "covid": "COVID"}
+    for key, (start, end) in CRISIS_WINDOWS.items():
+        axis.axvspan(start, end, color="#D9D9D9", alpha=0.35, linewidth=0)
+        axis.text(
+            start + (end - start) / 2,
+            7.25,
+            crisis_labels[key],
+            ha="center",
+            va="top",
+            fontsize=8,
+            color="#555555",
+        )
+
+    axis.set_yscale("log", base=2)
+    axis.set_ylim(0.5, 8.0)
+    axis.set_yticks([0.5, 1.0, 2.0, 4.0, 8.0])
+    axis.set_yticklabels(["$0.5", "$1", "$2", "$4", "$8"])
+    axis.xaxis.set_major_locator(YearLocator(3))
+    axis.xaxis.set_major_formatter(DateFormatter("%Y"))
+    axis.set_xlabel("Year")
+    axis.set_ylabel("Cumulative value on log2 scale")
+    axis.set_title(
+        "Cumulative value of $1 invested on 31 December 2004",
+        fontsize=14,
+        fontweight="bold",
+        pad=25,
+    )
+    axis.text(
+        0.5,
+        1.02,
+        "Monthly total returns through 31 July 2023; vertical axis uses a base-2 logarithmic scale",
+        transform=axis.transAxes,
+        ha="center",
+        va="bottom",
+        fontsize=9,
+        color="#555555",
+    )
+    axis.grid(axis="both", color="#E6E6E6", linewidth=0.8)
+    axis.spines[["top", "right"]].set_visible(False)
+    axis.legend(loc="upper center", bbox_to_anchor=(0.5, -0.16), ncol=2, frameon=False)
+    figure.subplots_adjust(left=0.10, right=0.98, top=0.83, bottom=0.24)
+    figure.savefig(destination, dpi=300, facecolor="white")
+    return destination
+
+
 def export_phase3e(
     results: Phase3EResults,
     output_dir: str | Path | None = None,
@@ -275,6 +353,7 @@ def export_phase3e(
         "covid_top10": destination / "covid_top10_industries.csv",
         "interpretation": destination / "interpretation.md",
         "payload": destination / "workbook_payload.json",
+        "chart": destination / "cumulative_performance.png",
     }
     results.monthly_returns.to_csv(paths["monthly_returns"], index_label="Date")
     results.cumulative_wealth.to_csv(paths["cumulative_wealth"], index_label="Date")
@@ -285,6 +364,7 @@ def export_phase3e(
     paths["payload"].write_text(
         json.dumps(build_reporting_payload(results), indent=2), encoding="utf-8"
     )
+    export_cumulative_performance_chart(results.cumulative_wealth, paths["chart"])
     return paths
 
 
