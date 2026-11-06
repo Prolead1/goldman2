@@ -20,6 +20,8 @@ dist/
 .idea/
 .vscode/
 
-# Generated Part 3 artifacts
+# Generated analysis artifacts
 part3/outputs/*
 !part3/outputs/.gitkeep
+part4/outputs/*
+!part4/outputs/.gitkeep
