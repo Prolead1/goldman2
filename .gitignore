@@ -16,5 +16,12 @@ dist/
 
 # OS / editor
 .DS_Store
+~$*
 .idea/
 .vscode/
+
+# Generated analysis artifacts
+part3/outputs/*
+!part3/outputs/.gitkeep
+part4/outputs/*
+!part4/outputs/.gitkeep

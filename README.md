@@ -16,6 +16,8 @@ construction and portfolio analytics to Fama-French and MSCI data.
 | `data/class-project-data-part-3-pf-construction.xlsx` | FF 49 industry monthly returns (Part 3) |
 | `data/class-project-data-part-4-product-innovation.xlsx` | NVDL and NVDA daily total returns (Part 4) |
 | `src/goldman2/data.py` | Loaders for all five parts |
+| `part3/` | Self-contained Part 3 analysis, notebook and tests |
+| `part4/` | Self-contained Part 4 analysis, notebook and tests |
 | `notebooks/` | Analysis notebooks (one per part) |
 | `exports/` | Generated exhibits (tables and charts) for the write-up |
 
@@ -74,6 +76,12 @@ etf = load_etf_daily()                    # daily NVDA/NVDL decimal returns
   written analysis and nine custom exhibits: data validation (universe, returns, coverage, the
   `Pb` = 0.50 spike, P/B sanity check), market-proxy validation against MSCI USA, three value
   portfolios, tracking error and similarity to HML. Exhibits are also exported to `exports/part2/`.
+- `part3/analysis.ipynb` — complete Part 3 workflow covering portfolio construction,
+  in/out-of-sample volatility, re-optimization and crisis-period performance. Supporting
+  modules and tests are kept together in `part3/`.
+- `part4/analysis.ipynb` — complete Part 4 workflow covering daily risk, the NVDL-on-NVDA
+  leverage regression, multi-day compounding and investor suitability. Supporting modules
+  and tests are kept together in `part4/`.
 
 ## Assignment map
 
