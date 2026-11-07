@@ -40,13 +40,22 @@ def monthly_total_returns(daily_returns: pd.DataFrame) -> pd.DataFrame:
 
 
 def full_period_total_returns(daily_returns: pd.DataFrame) -> pd.DataFrame:
-    """Compound daily returns over the complete February-August sample."""
+    """Compound returns and decompose daily-reset compounding and observed drag."""
     _validate_return_panel(daily_returns)
     compounded = pd.DataFrame(
         [(1.0 + daily_returns).prod(axis="index") - 1.0],
         index=pd.Index(["Feb-Aug 2024"], name="Period"),
     )
-    return _comparison_columns(compounded)
+    result = _comparison_columns(compounded)
+    ideal_daily_2x = (1.0 + 2.0 * daily_returns["NVDA"]).prod() - 1.0
+    result["Ideal daily 2x NVDA"] = ideal_daily_2x
+    result["Compounding effect vs twice NVDA"] = (
+        result["Ideal daily 2x NVDA"] - result["Twice NVDA cumulative return"]
+    )
+    result["NVDL minus ideal daily 2x"] = (
+        result["NVDL"] - result["Ideal daily 2x NVDA"]
+    )
+    return result
 
 
 def two_day_compounding_example(

@@ -33,6 +33,18 @@ class MultiDayPerformanceTests(unittest.TestCase):
             atol=1e-12,
         )
         self.assertAlmostEqual(actual["NVDL minus twice NVDA"], -0.0656622697159)
+        self.assertAlmostEqual(actual["Ideal daily 2x NVDA"], 2.0837224672, places=9)
+        self.assertAlmostEqual(
+            actual["Compounding effect vs twice NVDA"], 0.2027275071, places=9
+        )
+        self.assertAlmostEqual(
+            actual["NVDL minus ideal daily 2x"], -0.2683897768, places=9
+        )
+        self.assertAlmostEqual(
+            actual["Compounding effect vs twice NVDA"]
+            + actual["NVDL minus ideal daily 2x"],
+            actual["NVDL minus twice NVDA"],
+        )
 
     def test_two_day_example_shows_volatility_drag(self) -> None:
         scenario = two_day_compounding_example()

@@ -8,6 +8,7 @@ from part3.performance import (
     BENCHMARK_LABEL,
     LONG_ONLY_LABEL,
     build_phase3e_from_workbooks,
+    buy_and_hold_portfolio_returns,
     cumulative_wealth,
     export_phase3e,
 )
@@ -56,6 +57,27 @@ class PerformanceTests(unittest.TestCase):
             self.assertAlmostEqual(actual["Strategy return"], expected[LONG_ONLY_LABEL])
             self.assertAlmostEqual(actual["MSCI USA return"], expected[BENCHMARK_LABEL])
 
+    def test_buy_and_hold_sensitivity_uses_drifting_weights(self):
+        returns = pd.DataFrame(
+            {"A": [0.10, 0.00], "B": [0.00, 0.10]},
+            index=pd.date_range("2020-01-31", periods=2, freq="ME"),
+        )
+        weights = pd.Series({"A": 0.5, "B": 0.5})
+        actual = buy_and_hold_portfolio_returns(returns, weights)
+        expected_wealth = pd.Series([1.05, 1.10], index=returns.index)
+        expected = expected_wealth.pct_change()
+        expected.iloc[0] = expected_wealth.iloc[0] - 1.0
+        np.testing.assert_allclose(actual.to_numpy(), expected.to_numpy())
+
+        covid = self.results.crisis_summary.loc["COVID-19 shock"]
+        self.assertAlmostEqual(covid["Buy-and-hold return"], -0.1862591210, places=9)
+
+    def test_holding_crisis_table_reproduces_real_estate_results(self):
+        real_estate = self.results.holding_crisis_returns.loc["RlEst"]
+        self.assertAlmostEqual(real_estate["Target weight"], 0.1366872251, places=9)
+        self.assertAlmostEqual(real_estate["GFC return"], -0.6717729457, places=9)
+        self.assertAlmostEqual(real_estate["COVID return"], -0.4241971, places=9)
+
     def test_top_industry_tables_are_complete_and_descending(self):
         for frame in (self.results.gfc_top10, self.results.covid_top10):
             self.assertEqual(len(frame), 10)
@@ -74,7 +96,7 @@ class PerformanceTests(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as temp_dir:
             outputs = export_phase3e(self.results, temp_dir)
-            self.assertEqual(len(outputs), 8)
+            self.assertEqual(len(outputs), 10)
             self.assertTrue(all(path.is_file() for path in outputs.values()))
 
 

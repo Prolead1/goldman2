@@ -25,6 +25,10 @@ The loaders explicitly:
 - enforce the January 1995-July 2023 assignment cutoff; and
 - validate every estimation, evaluation and crisis window.
 
+Part 3E reports a portfolio rebalanced monthly to the 31 December 2004 target
+weights. It also exports a buy-and-hold sensitivity whose weights drift from
+inception and a holding-level table of GFC and COVID returns.
+
 ## Run
 
 From the repository root:

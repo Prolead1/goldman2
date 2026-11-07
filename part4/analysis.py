@@ -94,10 +94,14 @@ effects during this particular sample.
 
 From February through August 2024, NVDA returned {full['NVDA']:.2%} and NVDL returned
 {full['NVDL']:.2%}. Twice NVDA's cumulative return would be
-{full['Twice NVDA cumulative return']:.2%}; NVDL finished
-{abs(full['NVDL minus twice NVDA']):.2%} below that simple comparison. The monthly table also
-shows that NVDL can finish above or below twice NVDA because daily leverage resets and
-daily returns compound along the realized path.
+{full['Twice NVDA cumulative return']:.2%}. An ideal fee-free product delivering exactly
+twice NVDA's return each day would instead return {full['Ideal daily 2x NVDA']:.2%}.
+Daily path compounding therefore adds
+{full['Compounding effect vs twice NVDA']:.2%} relative to the simple comparison, while
+observed tracking and performance drag subtracts
+{abs(full['NVDL minus ideal daily 2x']):.2%} relative to the ideal daily-reset path.
+These offsetting effects leave actual NVDL
+{abs(full['NVDL minus twice NVDA']):.2%} below twice NVDA's cumulative return.
 
 ## 4E Two-day compounding example
 
