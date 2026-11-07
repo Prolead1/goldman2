@@ -17,7 +17,7 @@ NAVY=colors.HexColor('#172C43')
 
 
 def fmt(s):
-    s=escape(s.strip())
+    s=escape(s.strip()).replace('`','')
     s=re.sub(r'\*\*(.*?)\*\*',r'<b>\1</b>',s)
     s=re.sub(r'\*(.*?)\*',r'<i>\1</i>',s)
     s=s.replace('—','-').replace('−','-').replace('×','x').replace('²','2').replace('ᵢ','i').replace('ₚ','p').replace('Σ','sum ').replace('α','alpha').replace('β','beta').replace('ε','epsilon').replace('√','sqrt').replace('¼','1/4').replace('’',"'").replace('“','"').replace('”','"').replace('§','section ')
@@ -33,6 +33,7 @@ def main():
         'section':ParagraphStyle('S',fontName='Helvetica-Bold',fontSize=11,leading=14,textColor=NAVY,spaceBefore=12,spaceAfter=5,keepWithNext=True),
         'body':ParagraphStyle('B',fontName='Helvetica',fontSize=8.7,leading=12.5,spaceAfter=7,alignment=TA_LEFT),
         'cell':ParagraphStyle('C',fontName='Helvetica',fontSize=7.5,leading=10),
+        'summary':ParagraphStyle('Summary',fontName='Helvetica',fontSize=9.2,leading=13.5,spaceAfter=0),
         'head':ParagraphStyle('H',fontName='Helvetica-Bold',fontSize=7.5,leading=10,textColor=colors.white),
     }
     story=[]; lines=(BASE/'report.md').read_text().splitlines(); i=0
@@ -67,6 +68,9 @@ def main():
             tbl=Table(cells,colWidths=widths,repeatRows=1,hAlign='LEFT')
             tbl.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,0),NAVY),('VALIGN',(0,0),(-1,-1),'MIDDLE'),('BOTTOMPADDING',(0,0),(-1,-1),5),('TOPPADDING',(0,0),(-1,-1),5),('LINEBELOW',(0,-1),(-1,-1),.5,colors.HexColor('#B9C6D0')),('ROWBACKGROUNDS',(0,1),(-1,-1),[colors.white,colors.HexColor('#F5F8FA')])]))
             story.append(tbl);story.append(Spacer(1,7));continue
+        if line.startswith('**Summary.**'):
+            story.append(Table([[Paragraph(fmt(line),styles['summary'])]],colWidths=[174*mm],style=TableStyle([('BOX',(0,0),(-1,-1),.8,NAVY),('BACKGROUND',(0,0),(-1,-1),colors.HexColor('#F3F6F9')),('LEFTPADDING',(0,0),(-1,-1),11),('RIGHTPADDING',(0,0),(-1,-1),11),('TOPPADDING',(0,0),(-1,-1),10),('BOTTOMPADDING',(0,0),(-1,-1),10)])))
+            story.append(Spacer(1,10));continue
         para=line
         while i<len(lines) and lines[i].strip() and not lines[i].startswith(('#','|','![')):
             para+=' '+lines[i].strip();i+=1

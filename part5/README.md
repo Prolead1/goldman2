@@ -1,24 +1,18 @@
 # Part 5 - Portfolio analytics
 
-This self-contained folder adds **only Part 5** of FE5108. It reuses the existing `goldman2.data` loaders and the supplied FF/MSCI workbook. The assignment has **six** subsections, 5A-5F (there is no 5G/5H).
+This directory contains FE5108 Part 5A-5F analysis, manuscript, charts and a generated PDF. The code reuses the repository `goldman2.data` loaders and the supplied FF/MSCI workbook. The factor replication is in-sample and excludes trading costs.
 
-## Run (from repository root)
+## Reproduce from repository root
 
 ```bash
-python -m pip install -e .
-python -m pip install reportlab pytest
-python -m part5.analysis
-python -m part5.reporting
-python -m pytest part5/tests -q
+uv sync
+uv run python -m part5.analysis
+uv run --with reportlab python -m part5.reporting
+uv run --with pytest python -m pytest part5/tests -q
 ```
 
-Results are written to `part5/outputs/`, including the PDF, figures, monthly returns and JSON. The manuscript source is `part5/report.md` and can be pasted into the team's shared Google Doc. This folder can be committed without changing teammates' modules.
+Without `uv`, create a virtual environment and install `pip install -e . reportlab pytest` before running the same modules with `python`.
 
-## Reproducibility / interpretation
+The executed notebook lives at `notebooks/part5-portfolio-analytics.ipynb`. Open it with `uv run jupyter lab` if Jupyter is available, or install it with `uv run --with jupyterlab jupyter lab`. The report manuscript is `part5/report.md` and the rendered PDF is `part5/outputs/Part_5_Portfolio_Analytics_Report.pdf`.
 
-- Sample: Jan 1995-Jul 2023 (343 monthly observations); FF returns and MSCI index returns in monthly **percentage points**.
-- OLS: MSCI Value total return on constant, RF, Mkt-RF, HML, SMB; conventional unadjusted t-statistics.
-- Factor replication omits the fitted intercept and is evaluated **in-sample**, not an investable backtest.
-- Annualized arithmetic return and active return = 12 times monthly mean; volatility and tracking error = sqrt(12) times monthly sample standard deviation.
-- The four-factor MSCI blend is rebalanced to equal weights **monthly**. Risk contribution is `Cov(active_i, active_blend)/(4 Var(active_blend))`.
-- The report discusses limitations including transaction costs, factor shorting, index methodology and estimation look-ahead.
+The manuscript uses CAGR-based Sharpe ratios to match Part 1, but arithmetic monthly active returns for information ratios. Class lecture notes were not supplied; check the class-specific IR benchmark and limits-to-arbitrage framing before final submission.

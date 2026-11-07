@@ -16,3 +16,12 @@ def test_portfolio_and_risk_identity():
     assert np.isclose(sum(result['variance_contributions'].values()),1)
     assert max(result['variance_contributions'],key=result['variance_contributions'].get)=='MinVol'
     assert np.isclose(result['active']['MultiFactor']['information_ratio'],0.04484617791112214)
+
+def test_part1_consistent_sharpe_and_post2003():
+    result, returns, active = analyze(load_sample())
+    assert np.isclose(result['portfolios']['Value']['sharpe'], 0.450, atol=0.001)
+    assert np.isclose(result['portfolios']['Replication']['sharpe'], 0.529, atol=0.001)
+    assert np.isclose(result['post_2003_alpha']['monthly_alpha'], -0.0378321807, atol=1e-8)
+    assert np.isclose(result['post_2003_alpha']['t_stat'], -0.5507819853, atol=1e-8)
+    assert np.isclose(result['minvol_beta'], 0.7213945564, atol=1e-8)
+    assert np.isclose(result['geometric_active_spread'], 0.3363420252, atol=1e-8)
