@@ -9,9 +9,6 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from matplotlib.backends.backend_agg import FigureCanvasAgg
-from matplotlib.dates import DateFormatter, YearLocator
-from matplotlib.figure import Figure
 
 from .data import (
     CRISIS_WINDOWS,
@@ -60,8 +57,10 @@ class Phase3EResults:
 
     weights: pd.Series
     monthly_returns: pd.DataFrame
+    buy_and_hold_monthly_returns: pd.Series
     cumulative_wealth: pd.DataFrame
     crisis_summary: pd.DataFrame
+    holding_crisis_returns: pd.DataFrame
     gfc_top10: pd.DataFrame
     covid_top10: pd.DataFrame
 
@@ -94,6 +93,49 @@ def cumulative_period_returns(returns: pd.DataFrame) -> pd.Series:
     result = (1.0 + returns).prod(axis="index") - 1.0
     result.name = "cumulative_return"
     return result
+
+
+def buy_and_hold_portfolio_returns(
+    industry_returns: pd.DataFrame,
+    initial_weights: pd.Series,
+) -> pd.Series:
+    """Return a portfolio whose initial weights drift without rebalancing."""
+    if industry_returns.empty or initial_weights.empty:
+        raise PerformanceAnalysisError("Returns and initial weights must not be empty.")
+    if set(industry_returns.columns) != set(initial_weights.index):
+        raise PerformanceAnalysisError(
+            "Returns and initial weights must cover the same industries."
+        )
+    if industry_returns.isna().any().any() or initial_weights.isna().any():
+        raise PerformanceAnalysisError("Returns and initial weights must be complete.")
+    if not np.isclose(float(initial_weights.sum()), 1.0, atol=1e-8):
+        raise PerformanceAnalysisError("Initial weights must sum to one.")
+    aligned_weights = initial_weights.reindex(industry_returns.columns)
+    constituent_wealth = (1.0 + industry_returns).cumprod().mul(
+        aligned_weights, axis="columns"
+    )
+    portfolio_wealth = constituent_wealth.sum(axis="columns")
+    monthly_returns = portfolio_wealth.pct_change()
+    monthly_returns.iloc[0] = portfolio_wealth.iloc[0] - 1.0
+    monthly_returns.name = "Buy-and-hold, drifting weights"
+    return monthly_returns
+
+
+def holding_crisis_returns(
+    weights: pd.Series,
+    crisis_windows: dict[str, pd.DataFrame],
+) -> pd.DataFrame:
+    """Summarize target weights and crisis returns for invested industries."""
+    invested = weights.loc[weights.abs() > 1e-10].copy()
+    table = pd.DataFrame({"Target weight": invested})
+    for key, label in (("gfc", "GFC return"), ("covid", "COVID return")):
+        if key not in crisis_windows:
+            raise PerformanceAnalysisError(f"Missing {key} industry-return window.")
+        returns = cumulative_period_returns(crisis_windows[key])
+        table[label] = returns.reindex(table.index)
+    if table.isna().any().any():
+        raise PerformanceAnalysisError("Holding crisis returns are incomplete.")
+    return table.sort_values("Target weight", ascending=False)
 
 
 def _classification(industry: str, crisis: str) -> str:
@@ -132,6 +174,7 @@ def build_phase3e_from_workbooks(
     phase1 = load_phase1_data(industry_workbook)
     weights = build_phase2_portfolios(phase1.windows["seed_1"]).weights[LONG_ONLY]
     strategy = (phase1.windows["oos_1"] @ weights).rename(LONG_ONLY_LABEL)
+    buy_and_hold = buy_and_hold_portfolio_returns(phase1.windows["oos_1"], weights)
     benchmark = load_msci_usa_returns(msci_workbook).reindex(strategy.index)
     if benchmark.isna().any():
         raise PerformanceAnalysisError("MSCI USA returns do not cover every strategy month.")
@@ -144,12 +187,16 @@ def build_phase3e_from_workbooks(
         if period.empty:
             raise PerformanceAnalysisError(f"No monthly observations found for {key}.")
         compounded = cumulative_period_returns(period)
+        buy_and_hold_return = float(
+            (1.0 + buy_and_hold.loc[start:end]).prod(axis="index") - 1.0
+        )
         relative = float(compounded[LONG_ONLY_LABEL] - compounded[BENCHMARK_LABEL])
         crisis_rows.append(
             {
                 "Crisis": labels[key],
                 "Window": f"{start:%b %Y}-{end:%b %Y}",
                 "Strategy return": float(compounded[LONG_ONLY_LABEL]),
+                "Buy-and-hold return": buy_and_hold_return,
                 "MSCI USA return": float(compounded[BENCHMARK_LABEL]),
                 "Relative return": relative,
                 "Defensive outperformance": relative > 0.0,
@@ -160,8 +207,10 @@ def build_phase3e_from_workbooks(
     return Phase3EResults(
         weights=weights.rename(LONG_ONLY_LABEL),
         monthly_returns=monthly,
+        buy_and_hold_monthly_returns=buy_and_hold,
         cumulative_wealth=cumulative_wealth(monthly),
         crisis_summary=crisis_summary,
+        holding_crisis_returns=holding_crisis_returns(weights, phase1.windows),
         gfc_top10=top_industries_by_cumulative_return(
             phase1.windows["gfc"], crisis="GFC"
         ),
@@ -176,6 +225,7 @@ def interpretation_markdown(results: Phase3EResults) -> str:
     ending = results.cumulative_wealth.iloc[-1]
     gfc = results.crisis_summary.loc["Global Financial Crisis"]
     covid = results.crisis_summary.loc["COVID-19 shock"]
+    real_estate = results.holding_crisis_returns.loc["RlEst"]
 
     def verdict(row: pd.Series) -> str:
         return (
@@ -196,7 +246,8 @@ def interpretation_markdown(results: Phase3EResults) -> str:
     return f"""# Part 3E - Cumulative performance and crisis behavior
 
 One dollar invested on 12/31/2004 grew to ${ending[LONG_ONLY_LABEL]:.2f} in the
-fixed long-only minimum-variance portfolio and ${ending[BENCHMARK_LABEL]:.2f} in
+long-only minimum-variance portfolio, rebalanced monthly to its 12/31/2004 target
+weights, and ${ending[BENCHMARK_LABEL]:.2f} in
 the MSCI USA gross total-return index by 7/31/2023. The cumulative chart uses a
 base-2 logarithmic vertical axis, so equal vertical distances represent a
 doubling or halving of wealth.
@@ -211,6 +262,12 @@ industries and should not all be treated as permanent defensives.
 During the COVID shock (February-March 2020), the strategy returned
 {covid['Strategy return']:.2%} versus {covid['MSCI USA return']:.2%} for MSCI USA,
 a relative result of {covid['Relative return']:+.2%}. It therefore {verdict(covid)}.
+The {real_estate['Target weight']:.2%} target allocation to Real Estate helps explain
+the crisis losses: the industry returned {real_estate['GFC return']:.2%} in the GFC
+and {real_estate['COVID return']:.2%} during COVID. A buy-and-hold implementation
+whose weights drift from inception would instead have returned
+{covid['Buy-and-hold return']:.2%} during COVID, compared with
+{covid['MSCI USA return']:.2%} for MSCI USA, reversing the relative conclusion.
 Traditional defensives in the top ten were {covid_defensive}. The list also
 contains COVID or stay-at-home beneficiaries ({covid_beneficiaries}), illustrating
 that this episode rewarded both classic defensives and businesses helped by the
@@ -238,6 +295,7 @@ def build_reporting_payload(results: Phase3EResults) -> dict[str, object]:
                 "crisis": crisis,
                 "window": row["Window"],
                 "strategy_return": float(row["Strategy return"]),
+                "buy_and_hold_return": float(row["Buy-and-hold return"]),
                 "benchmark_return": float(row["MSCI USA return"]),
                 "relative_return": float(row["Relative return"]),
                 "defensive_outperformance": bool(row["Defensive outperformance"]),
@@ -254,6 +312,15 @@ def build_reporting_payload(results: Phase3EResults) -> dict[str, object]:
             name: float(value) for name, value in results.cumulative_wealth.iloc[-1].items()
         },
         "crises": crisis_rows,
+        "holding_crisis_returns": [
+            {
+                "industry": industry,
+                "target_weight": float(row["Target weight"]),
+                "gfc_return": float(row["GFC return"]),
+                "covid_return": float(row["COVID return"]),
+            }
+            for industry, row in results.holding_crisis_returns.iterrows()
+        ],
         "gfc_top10": records(results.gfc_top10),
         "covid_top10": records(results.covid_top10),
     }
@@ -264,6 +331,10 @@ def export_cumulative_performance_chart(
     output_path: str | Path,
 ) -> Path:
     """Export the report-ready Part 3E cumulative-performance chart."""
+    from matplotlib.backends.backend_agg import FigureCanvasAgg
+    from matplotlib.dates import DateFormatter, YearLocator
+    from matplotlib.figure import Figure
+
     required_columns = [LONG_ONLY_LABEL, BENCHMARK_LABEL]
     if wealth.empty or list(wealth.columns) != required_columns:
         raise PerformanceAnalysisError(
@@ -347,8 +418,10 @@ def export_phase3e(
     destination.mkdir(parents=True, exist_ok=True)
     paths = {
         "monthly_returns": destination / "monthly_performance.csv",
+        "buy_and_hold_returns": destination / "buy_and_hold_monthly_returns.csv",
         "cumulative_wealth": destination / "cumulative_wealth.csv",
         "crisis_summary": destination / "crisis_summary.csv",
+        "holding_crisis_returns": destination / "holding_crisis_returns.csv",
         "gfc_top10": destination / "gfc_top10_industries.csv",
         "covid_top10": destination / "covid_top10_industries.csv",
         "interpretation": destination / "interpretation.md",
@@ -356,8 +429,12 @@ def export_phase3e(
         "chart": destination / "cumulative_performance.png",
     }
     results.monthly_returns.to_csv(paths["monthly_returns"], index_label="Date")
+    results.buy_and_hold_monthly_returns.to_csv(
+        paths["buy_and_hold_returns"], index_label="Date"
+    )
     results.cumulative_wealth.to_csv(paths["cumulative_wealth"], index_label="Date")
     results.crisis_summary.to_csv(paths["crisis_summary"])
+    results.holding_crisis_returns.to_csv(paths["holding_crisis_returns"])
     results.gfc_top10.to_csv(paths["gfc_top10"])
     results.covid_top10.to_csv(paths["covid_top10"])
     paths["interpretation"].write_text(interpretation_markdown(results), encoding="utf-8")
