@@ -29,6 +29,9 @@ NVDA and NVDL total returns in `../data/` and the fund factsheet in `../docs/`.
   145 residual degrees of freedom.
 - Monthly and full-period returns compound the daily observations rather than
   summing them.
+- The full-period comparison separately reports twice NVDA's cumulative return,
+  the ideal fee-free daily-reset 2x path, the compounding effect between those
+  benchmarks and NVDL's observed drag relative to the ideal daily-reset path.
 
 ## Run
 
