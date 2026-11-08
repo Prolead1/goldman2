@@ -68,11 +68,11 @@ def save_charts(d: pd.DataFrame, active: pd.DataFrame, result: dict):
     plt.rcParams.update({'font.size':10, 'axes.spines.top':False, 'axes.spines.right':False})
     wealth=(1+d[['Value','Replication']]/100).cumprod()
     fig,ax=plt.subplots(figsize=(8.1,3.5)); wealth.plot(ax=ax,lw=2)
-    ax.set(title='Can cheap factors replicate MSCI Value?',ylabel='Growth of $1',xlabel='Year');ax.grid(alpha=.2)
+    ax.set(title='Growth of $1: MSCI USA Value vs FF replication',ylabel='Growth of $1',xlabel='Year');ax.grid(alpha=.2)
     fig.tight_layout();fig.savefig(OUT/'5d_replication_growth.png',dpi=180);plt.close(fig)
     fig,ax=plt.subplots(figsize=(8.1,3.5));
     pd.Series(result['variance_contributions']).mul(100).sort_values().plot.barh(ax=ax)
-    ax.set(title='Who consumes the active-risk budget?',xlabel='Share of active-return variance (%)',ylabel='Factor')
+    ax.set(title='Share of active-return variance by index',xlabel='Share of active-return variance (%)',ylabel='Factor')
     fig.tight_layout();fig.savefig(OUT/'5f_tracking_error_decomposition.png',dpi=180);plt.close(fig)
     fig,ax=plt.subplots(figsize=(8.1,3.5));
     active.cumsum().plot(ax=ax,lw=1.5)

@@ -18,6 +18,7 @@ construction and portfolio analytics to Fama-French and MSCI data.
 | `src/goldman2/data.py` | Loaders for all five parts |
 | `part3/` | Self-contained Part 3 analysis, notebook and tests |
 | `part4/` | Self-contained Part 4 analysis, notebook and tests |
+| `part5/` | Part 5 analysis module, manuscript, PDF renderer and tests |
 | `notebooks/` | Analysis notebooks (one per part) |
 | `exports/` | Generated exhibits (tables and charts) for the write-up |
 
@@ -82,6 +83,10 @@ etf = load_etf_daily()                    # daily NVDA/NVDL decimal returns
 - `part4/analysis.ipynb` — complete Part 4 workflow covering daily risk, the NVDL-on-NVDA
   leverage regression, multi-day compounding and investor suitability. Supporting modules
   and tests are kept together in `part4/`.
+- `notebooks/part5-portfolio-analytics.ipynb` — complete Part 5 workflow covering MSCI Value vs
+  HML definitions, the factor-exposure regression and alpha tests, fund replication, benchmark-relative
+  performance and active-risk decomposition. The analysis module, manuscript (`report.md`), PDF
+  renderer and tests are in `part5/`; charts and results are exported to `part5/outputs/`.
 
 ## Assignment map
 
